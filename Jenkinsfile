@@ -2,85 +2,63 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'SonarQube' // The name of your SonarQube server configuration in Jenkins
+        MAVEN_HOME = tool name: 'Maven 3.8.5', type: 'maven'
+        SONARQUBE = 'SonarQube' // This is the name of your SonarQube server in Jenkins configuration
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the repository
-                checkout scm
+                // Checkout code from Git repository
+                git url: 'https://github.com/your-username/your-repo.git', branch: 'main'
             }
         }
-        
-        stage('Verify Project Structure') {
-            steps {
-                script {
-                    // Verify that the POM file exists
-                    def pomFile = fileExists 'pom.xml'
-                    if (!pomFile) {
-                        error "Maven POM file not found in the workspace."
-                    }
-                }
-            }
-        }
-        
+
         stage('Build') {
             steps {
                 script {
-                    def mvnHome = tool name: 'Maven 3', type: 'maven'
-                    if (mvnHome == null) {
-                        error "Maven installation not found. Please configure Maven in Jenkins."
-                    }
-                    
-                    // If your pom.xml is not in the root directory, navigate to the correct directory
-                    // sh "cd path/to/maven/project && ${mvnHome}/bin/mvn clean install"
-                    sh "${mvnHome}/bin/mvn clean install"
+                    // Execute Maven build
+                    sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
             }
         }
-        
+
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(SONARQUBE_SERVER) {
-                    sh 'sonar-scanner \
-                        -Dsonar.projectKey=mynewprojforgit \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://65.0.94.218:9000 \
-                        -Dsonar.login=sqp_81eaf243d092b37675a466efcd0abee3233b6d81'
+                script {
+                    // Run SonarQube analysis
+                    sh """
+                        ${MAVEN_HOME}/bin/mvn sonar:sonar \
+                        -Dsonar.projectKey=your-project-key \
+                        -Dsonar.host.url=http://your-sonarqube-server:9000 \
+                        -Dsonar.login=your-sonarqube-token
+                    """
                 }
             }
         }
-        
+
         stage('Quality Gate') {
             steps {
                 script {
-                    def qualityGate = waitForQualityGate()
-                    if (qualityGate.status != 'OK') {
-                        error "SonarQube Quality Gate failed: ${qualityGate.status}"
+                    // Check SonarQube quality gate status
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
                     }
                 }
             }
         }
-        
+
         stage('Merge to Main') {
             when {
-                expression {
-                    // Only run if the branch is a pull request
-                    return env.CHANGE_ID
-                }
+                branch 'feature/*'
             }
             steps {
                 script {
-                    def mergeCmd = """
-                    git config user.email "jenkins@example.com"
-                    git config user.name "Jenkins"
-                    git checkout main
-                    git pull origin main
-                    git merge ${env.CHANGE_BRANCH}
-                    git push origin main
-                    """
-                    sh mergeCmd
+                    // Merge to main branch
+                    sh 'git checkout main'
+                    sh 'git merge feature/your-feature-branch'
+                    sh 'git push origin main'
                 }
             }
         }
@@ -88,14 +66,8 @@ pipeline {
 
     post {
         always {
-            // Clean up the workspace after the build
+            // Clean up workspace
             cleanWs()
-        }
-        success {
-            echo 'Build and analysis completed successfully.'
-        }
-        failure {
-            echo 'Build or analysis failed.'
         }
     }
 }
