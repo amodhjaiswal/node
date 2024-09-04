@@ -8,22 +8,40 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the pull request code
+                // Checkout the code from the repository
                 checkout scm
+            }
+        }
+        
+        stage('Verify Project Structure') {
+            steps {
+                script {
+                    // Verify that the POM file exists
+                    def pomFile = fileExists 'pom.xml'
+                    if (!pomFile) {
+                        error "Maven POM file not found in the workspace."
+                    }
+                }
             }
         }
         
         stage('Build') {
             steps {
-                // Perform the build. Adjust according to your build tool
-                // For example, for a Maven project:
-                sh 'mvn clean install'
+                script {
+                    def mvnHome = tool name: 'Maven 3', type: 'maven'
+                    if (mvnHome == null) {
+                        error "Maven installation not found. Please configure Maven in Jenkins."
+                    }
+                    
+                    // If your pom.xml is not in the root directory, navigate to the correct directory
+                    // sh "cd path/to/maven/project && ${mvnHome}/bin/mvn clean install"
+                    sh "${mvnHome}/bin/mvn clean install"
+                }
             }
         }
         
         stage('SonarQube Analysis') {
             steps {
-                // Perform SonarQube analysis using the SonarQube scanner
                 withSonarQubeEnv(SONARQUBE_SERVER) {
                     sh 'sonar-scanner \
                         -Dsonar.projectKey=mynewprojforgit \
@@ -36,7 +54,6 @@ pipeline {
         
         stage('Quality Gate') {
             steps {
-                // Wait for SonarQube to analyze the code and get the quality gate result
                 script {
                     def qualityGate = waitForQualityGate()
                     if (qualityGate.status != 'OK') {
