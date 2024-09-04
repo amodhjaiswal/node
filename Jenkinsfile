@@ -27,7 +27,7 @@ pipeline {
         stage('Deploy React App') {
             steps {
                 // Using rsync for deployment
-                sh 'cp -r /var/lib/jenkins/workspace/mysonargithub/build/* /var/html/''
+                sh 'cp -r /var/lib/jenkins/workspace/mysonargithub/build/* /var/html/'
             }
         }
 
