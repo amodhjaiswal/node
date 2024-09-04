@@ -20,21 +20,26 @@ pipeline {
             }
         }
 
-        stage('Sonar-scanner') {
+        stage('SonarQube Analysis') {
             steps {
-                // Add SonarQube scanner commands here
-                // Example:
-                // sh "${tool 'SonarQube Scanner'}/bin/sonar-scanner \
-                // -Dsonar.projectKey=my-project \
-                // -Dsonar.sources=. \
-                // -Dsonar.host.url=http:65.0.94.218:9000 \
-                // -Dsonar.login=retail-token"
+                // Ensure SonarQube Scanner is configured correctly
+                // Replace placeholder values with actual configuration
+                sh '''
+                ${tool 'SonarQube Scanner'}/bin/sonar-scanner \
+                -Dsonar.projectKey=my-project \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://your-sonarqube-server:9000 \
+                -Dsonar.login=your-retail-token
+                '''
             }
         }
 
         stage('Deploy React App') {
             steps {
-                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/var/www/html'
+                sh '''
+                rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" \
+                ${WORKSPACE}/build/ ubuntu@65.0.94.218:/var/www/html
+                '''
             }
         }
     }
