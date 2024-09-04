@@ -3,21 +3,21 @@ pipeline {
 
     environment {
         MAVEN_HOME = tool name: 'Maven 3.8.5', type: 'maven'
-        SONARQUBE = 'SonarQube' // This is the name of your SonarQube server in Jenkins configuration
+        SONARQUBE = 'SonarQube' // Name of your SonarQube server in Jenkins configuration
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout code from Git repository
-                git url: 'https://github.com/your-username/your-repo.git', branch: 'main'
+                git url: 'https://github.com/saba-2002/react-a-saba.git', branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
+                // Execute Maven build
                 script {
-                    // Execute Maven build
                     sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
             }
@@ -25,8 +25,8 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                // Run SonarQube analysis
                 script {
-                    // Run SonarQube analysis
                     sh """
                         ${MAVEN_HOME}/bin/mvn sonar:sonar \
                         -Dsonar.projectKey=your-project-key \
@@ -51,7 +51,7 @@ pipeline {
 
         stage('Merge to Main') {
             when {
-                branch 'feature/*'
+                branch 'feature/*' // Adjust this condition based on your branch naming conventions
             }
             steps {
                 script {
@@ -66,8 +66,10 @@ pipeline {
 
     post {
         always {
-            // Clean up workspace
-            cleanWs()
+            // Clean up workspace within a node context
+            node {
+                cleanWs()
+            }
         }
     }
 }
