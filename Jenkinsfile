@@ -15,6 +15,12 @@ pipeline {
             }
         }
 
+         stage('Sonar-scanner') {
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+
    
         stage('Build React App') {
             steps {
