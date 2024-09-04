@@ -1,75 +1,44 @@
 pipeline {
     agent any
 
-    environment {
-        MAVEN_HOME = tool name: 'Maven 3.8.5', type: 'maven'
-        SONARQUBE = 'SonarQube' // Name of your SonarQube server in Jenkins configuration
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone React App') {
             steps {
-                // Checkout code from Git repository
-                git url: 'https://github.com/saba-2002/react-a-saba.git', branch: 'main'
+                git 'https://github.com/amodhjaiswal/node.git'
+            }
+        }
+        stage('Build React App') {
+            steps {
+                sh 'npm install'
+             
             }
         }
 
-        stage('Build') {
+  stage('Sonar-scanner') {
             steps {
-                // Execute Maven build
-                script {
-                    sh "${MAVEN_HOME}/bin/mvn clean install"
-                }
+                //figure out :) will let you know but first try
+             
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                // Run SonarQube analysis
-                script {
-                    sh """
-                        ${MAVEN_HOME}/bin/mvn sonar:sonar \
-                        -Dsonar.projectKey=your-project-key \
-                        -Dsonar.host.url=http://your-sonarqube-server:9000 \
-                        -Dsonar.login=your-sonarqube-token
-                    """
-                }
-            }
-        }
 
-        stage('Quality Gate') {
+ stage('Build React App') {
             steps {
-                script {
-                    // Check SonarQube quality gate status
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                    }
-                }
+                
+                sh 'npm run build'
             }
         }
-
-        stage('Merge to Main') {
-            when {
-                branch 'feature/*' // Adjust this condition based on your branch naming conventions
-            }
+        
+        stage('Deploy React App') {
             steps {
-                script {
-                    // Merge to main branch
-                    sh 'git checkout main'
-                    sh 'git merge feature/your-feature-branch'
-                    sh 'git push origin main'
-                }
+               
+                //sh 'scp -i /home/jenkins/.ssh/authorized_keys /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/home/ubuntu'
+                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys " /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/var/www/html'
             }
         }
-    }
-
-    post {
-        always {
-            // Clean up workspace within a node context
-            node {
-                cleanWs()
-            }
-        }
+       
+        
+       
     }
 }
+
