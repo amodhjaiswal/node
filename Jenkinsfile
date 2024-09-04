@@ -6,7 +6,7 @@ pipeline {
         
         stage('Clone React App') {
             steps {
-                git 'https://github.com/amodhjaiswal/node.git'
+                git 'https://github.com/saba-2002/react-a-saba.git'
             }
         }
         stage('Install Dependencies') {
@@ -27,7 +27,7 @@ pipeline {
         stage('Deploy React App') {
             steps {
                 // Using rsync for deployment
-                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" /var/lib/jenkins/workspace/node/build/ ubuntu@3.106.222.255:/var/www/html'
+                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" /var/lib/jenkins/workspace/node/build/ ubuntu@65.0.94.218:/var/www/html'
             }
         }
 
