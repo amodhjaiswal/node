@@ -15,12 +15,12 @@ pipeline {
             }
         }
 
-         stage('Sonar-scanner') {
-            steps {
-                sh 'sonar-scanner'
-
-            }
-        }
+     stage('SonarQube Analysis') {
+    def scannerHome = tool 'SonarQube';
+    withSonarQubeEnv() {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
+  }
 
    
         stage('Build React App') {
