@@ -4,41 +4,45 @@ pipeline {
     stages {
         stage('Clone React App') {
             steps {
-                git 'https://github.com/amodhjaiswal/node.git'
+                git 'https://github.com/saba-2002/react-a-saba.git'
             }
         }
-        stage('Build React App') {
+
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
-             
             }
         }
 
-  stage('Sonar-scanner') {
+        stage('Build React App') {
             steps {
-                //figure out :) will let you know but first try
-             
-            }
-        }
-
-
- stage('Build React App') {
-            steps {
-                
                 sh 'npm run build'
             }
         }
-        
-        stage('Deploy React App') {
+
+        stage('Sonar-scanner') {
             steps {
-               
-                //sh 'scp -i /home/jenkins/.ssh/authorized_keys /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/home/ubuntu'
-                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys " /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/var/www/html'
+                // Add SonarQube scanner commands here
+                // Example:
+                // sh "${tool 'SonarQube Scanner'}/bin/sonar-scanner \
+                // -Dsonar.projectKey=my-project \
+                // -Dsonar.sources=. \
+                // -Dsonar.host.url=http:65.0.94.218:9000 \
+                // -Dsonar.login=retail-token"
             }
         }
-       
-        
-       
+
+        stage('Deploy React App') {
+            steps {
+                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" /var/lib/jenkins/workspace/node/build ubuntu@3.106.222.255:/var/www/html'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            cleanWs() // Clean up workspace
+        }
     }
 }
-
