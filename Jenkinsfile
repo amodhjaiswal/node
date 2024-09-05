@@ -47,7 +47,7 @@ pipeline {
                 sh '''
                 rsync -avz -e "ssh -i /home/jenkins/.ssh/id_rsa" \
                     /var/lib/jenkins/workspace/react-a-saba/build/ \
-                    ubuntu@3.106.222.255:/var/www/html
+                    ubuntu@65.0.94.218:/var/www/html
                 '''
             }
         }
