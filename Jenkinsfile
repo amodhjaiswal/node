@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Define your SonarQube token here using Jenkins credentials plugin
         SONAR_TOKEN = credentials('newsonar') // Replace 'sonar-token-id' with your actual SonarQube token ID in Jenkins credentials
     }
 
@@ -22,14 +21,13 @@ pipeline {
         stage('SonarQube Scan') {
             steps {
                 script {
-                    // Run SonarQube scan using the installed SonarQube Scanner
                     withSonarQubeEnv('SonarQube') { // Replace 'SonarQube' with the name of your SonarQube installation in Jenkins
                         sh '''
                         sonar-scanner \
                             -Dsonar.projectKey=sonarscancode \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://65.0.94.218:9000 \
-                            -Dsonar.login=sqp_76fa3cbe4ef53fbb9ed8081d2ee65d2f1e968b7b
+                            -Dsonar.login=
                         '''
                     }
                 }
@@ -47,7 +45,7 @@ pipeline {
                 sh '''
                 rsync -avz -e "ssh -i /home/jenkins/.ssh/id_rsa" \
                     /var/lib/jenkins/workspace/react-a-saba/build/ \
-                    ubuntu@65.0.94.218:/var/www/html
+                    ubuntu@3.106.222.255:/var/www/html
                 '''
             }
         }
