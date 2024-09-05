@@ -43,9 +43,12 @@ pipeline {
         stage('Deploy React App') {
             steps {
                 sh '''
-                rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" \
-                    /var/lib/jenkins/workspace/react-a-saba/build/ \
-                    ubuntu@65.0.94.218:/var/www/html
+                # Define the source and target directories
+                SOURCE_DIR="/var/lib/jenkins/workspace/react-a-saba/build/"
+                TARGET_DIR="/var/www/html/"
+
+                # Copy files from source to target
+                cp -r ${SOURCE_DIR}* ${TARGET_DIR}
                 '''
             }
         }
