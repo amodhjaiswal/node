@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Define your SonarQube token here using Jenkins credentials plugin
+        SONAR_TOKEN = credentials('newsonar') // Replace 'sonar-token-id' with your actual SonarQube token ID in Jenkins credentials
+    }
+
     stages {
         stage('Clone React App') {
             steps {
@@ -17,14 +22,16 @@ pipeline {
         stage('SonarQube Scan') {
             steps {
                 script {
-                    // Run SonarQube scan
-                    sh """
-                    sonar-scanner \
-                        -Dsonar.projectKey=sonarscancode \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://65.0.94.218:9000 \
-                        -Dsonar.login=sqp_76fa3cbe4ef53fbb9ed8081d2ee65d2f1e968b7b
-                    """
+                    // Run SonarQube scan using the installed SonarQube Scanner
+                    withSonarQubeEnv('SonarQube') { // Replace 'SonarQube' with the name of your SonarQube installation in Jenkins
+                        sh '''
+                        sonar-scanner \
+                            -Dsonar.projectKey=sonarscancode \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://65.0.94.218:9000 \
+                            -Dsonar.login=sqp_76fa3cbe4ef53fbb9ed8081d2ee65d2f1e968b7b
+                        '''
+                    }
                 }
             }
         }
@@ -37,7 +44,6 @@ pipeline {
 
         stage('Deploy React App') {
             steps {
-                // Use rsync for deployment
                 sh '''
                 rsync -avz -e "ssh -i /home/jenkins/.ssh/id_rsa" \
                     /var/lib/jenkins/workspace/react-a-saba/build/ \
@@ -47,15 +53,9 @@ pipeline {
         }
     }
 
-    environment {
-        // Use Jenkins credentials for SonarQube token
-        SONAR_TOKEN = credentials('newsonar') // Replace 'sonar-token-id' with the actual credentials ID
-    }
-
     post {
         always {
-            // Clean up workspace or other steps you want to run after the pipeline
-            cleanWs()
+            cleanWs() // Clean up the workspace after the build
         }
     }
 }
