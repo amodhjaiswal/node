@@ -43,7 +43,7 @@ pipeline {
         stage('Deploy React App') {
             steps {
                 sh '''
-                rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys" \
+                rsync -avz -e "ssh -i /home/ubuntu/.ssh/authorized_keys" \
                     /var/lib/jenkins/workspace/react-a-saba/build/ \
                     ubuntu@65.0.94.218:/var/www/html
                 '''
