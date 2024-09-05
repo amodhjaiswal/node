@@ -44,7 +44,7 @@ pipeline {
             steps {
                 sh '''
                 # Define the source and target directories
-                SOURCE_DIR="/var/lib/jenkins/workspace/react-a-saba/build/"
+                SOURCE_DIR="/var/lib/jenkins/workspace/mynewsonar/build/"
                 TARGET_DIR="/var/www/html/"
 
                 # Copy files from source to target
