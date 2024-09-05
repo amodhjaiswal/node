@@ -49,7 +49,7 @@ pipeline {
 
     environment {
         // Use Jenkins credentials for SonarQube token
-        SONAR_TOKEN = credentials('sonar-token-id') // Replace 'sonar-token-id' with the actual credentials ID
+        SONAR_TOKEN = credentials('newsonar') // Replace 'sonar-token-id' with the actual credentials ID
     }
 
     post {
