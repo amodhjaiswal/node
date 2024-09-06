@@ -42,7 +42,7 @@ pipeline {
 
         stage('Deploy React App') {
             steps {
-                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys " /var/lib/jenkins/workspace/mynewsonar/build/ ubuntu@65.0.94.218:/var/www/html '
+                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/authorized_keys " /var/lib/jenkins/workspace/mynewsonar/build/ ubuntu@65.2.78.231:/var/www/html '
             }
         }
     }
