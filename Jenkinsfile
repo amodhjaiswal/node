@@ -42,14 +42,7 @@ pipeline {
 
         stage('Deploy React App') {
             steps {
-                sh '''
-                # Define the source and target directories
-                SOURCE_DIR="/var/lib/jenkins/workspace/mynewsonar@tmp/build/"
-                TARGET_DIR="/var/www/html/"
-
-                # Copy files from source to target
-                cp -r ${SOURCE_DIR}* ${TARGET_DIR}
-                '''
+                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/id_rsa " /var/lib/jenkins/workspace/mynewsonar/build/ ubuntu@65.0.94.218:/var/www/html '
             }
         }
     }
