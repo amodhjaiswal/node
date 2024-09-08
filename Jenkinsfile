@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SONAR_TOKEN = credentials('newsonar') // Replace 'sonar-token-id' with your actual SonarQube token ID in Jenkins credentials
+        SONAR_TOKEN = credentials('mytoken') // Replace 'sonar-token-id' with your actual SonarQube token ID in Jenkins credentials
     }
 
     stages {
@@ -24,10 +24,10 @@ pipeline {
                     withSonarQubeEnv('SonarQube') { // Replace 'SonarQube' with the name of your SonarQube installation in Jenkins
                         sh '''
                         sonar-scanner \
-                            -Dsonar.projectKey=sonarscancode \
+                            -Dsonar.projectKey=react-project \
                             -Dsonar.sources=. \
-                            -Dsonar.host.url=http://65.0.94.218:9000 \
-                            -Dsonar.login=
+                            -Dsonar.host.url=http://localhost:9000 \
+                            -Dsonar.login=sqa_4dbf447f5e04be71a21fc21c7088f2d37b3ebc0e
                         '''
                     }
                 }
@@ -42,7 +42,7 @@ pipeline {
 
         stage('Deploy React App') {
             steps {
-                sh 'rsync -avz -e "ssh -i /home/jenkins/.ssh/id_rsa" /var/lib/jenkins/workspace/mysonargithub/build/ ubuntu@65.2.78.231:/var/www/html '
+                sh 'rsync -avz -e "ssh -i /var/lib/jenkins/.ssh/id_rsa" /var/lib/jenkins/workspace/mysonargithub/build/ ubuntu@3.7.66.118:/var/www/html '
             }
         }
     }
