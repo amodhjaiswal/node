@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('mytoken') // Replace 'sonar-token-id' with your actual SonarQube token ID in Jenkins credentials
+        SONAR_SCANNER_HOME = '/opt/sonar-scanner' // Adjust this path to your SonarQube Scanner installation
     }
 
     stages {
