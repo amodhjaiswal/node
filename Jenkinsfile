@@ -44,7 +44,7 @@ pipeline {
 
         stage('Deploy React App') {
             steps {
-                sh 'rsync -avz -e "ssh -i /var/lib/jenkins/.ssh/test.pem" /var/lib/jenkins/workspace/sonarscan/build/ ubuntu@3.7.66.118:/var/www/html '
+                sh 'rsync -avz -e "ssh -i /var/lib/jenkins/.ssh/test.pem" /var/lib/jenkins/workspace/sonarscan/build/ ubuntu@3.7.66.118:/home/ubuntu '
             }
         }
     }
