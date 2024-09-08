@@ -29,7 +29,7 @@ pipeline {
                             -Dsonar.projectKey=react-project \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://localhost:9000 \
-                            -Dsonar.login=${SONAR_TOKEN}
+                            -Dsonar.login=sqa_4dbf447f5e04be71a21fc21c7088f2d37b3ebc0e
                         '''
                     }
                 }
