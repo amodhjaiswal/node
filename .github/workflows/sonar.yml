@@ -1,0 +1,49 @@
+name: SonarQube Analysis
+
+on:
+  pull_request:
+    branches:
+      - qa
+
+jobs:
+  sonar:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # Adjust if using a different JDK version
+
+      - name: Cache SonarQube scanner
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-sonar-
+
+
+      - name: Run SonarQube Scan
+        run: |
+          sonar-scanner \
+              -Dsonar.projectKey=my-project \
+             -Dsonar.sources=. \
+              -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+      - name: Check SonarQube Quality Gate
+        id: quality_gate
+        run: |
+          QUALITY_GATE_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} \
+            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=my-project" \
+            | jq -r '.projectStatus.status')
+          
+          if [ "$QUALITY_GATE_STATUS" != "OK" ]; then
+            echo "SonarQube Quality Gate failed"
+            exit 1
+          fi
