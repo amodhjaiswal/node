@@ -28,8 +28,8 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-sonar-
-
+            ${{ runner.os }}-sonar
+            
       - name: Run SonarQube Scan
         run: |
           sonar-scanner \
