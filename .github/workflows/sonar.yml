@@ -8,9 +8,16 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+    
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # Adjust if using a different JDK version
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          
       - name: Cache SonarQube scanner
         uses: actions/cache@v3
         with:
