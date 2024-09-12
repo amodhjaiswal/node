@@ -33,7 +33,7 @@ jobs:
           sonar-scanner \
               -Dsonar.projectKey=my-project \
              -Dsonar.sources=. \
-              -Dsonar.host.url=http://localhost:9000 \
+              -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: Check SonarQube Quality Gate
