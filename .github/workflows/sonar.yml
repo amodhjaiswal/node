@@ -1,0 +1,49 @@
+name: SonarQube Analysis
+
+on:
+  pull_request:
+    branches:
+      - qa
+
+jobs:
+  sonar:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache SonarQube scanner
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-sonar-
+
+      - name: Install SonarQube Scanner
+        run: |
+          curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip sonar-scanner-cli.zip
+          export PATH="$PATH:$(pwd)/sonar-scanner-4.8.0.2856-linux/bin"
+
+      - name: Run SonarQube Scan
+        run: |
+          sonar-scanner \
+              -Dsonar.projectKey=my-project \
+             -Dsonar.sources=. \
+              -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} 
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+      - name: Check SonarQube Quality Gate
+        id: quality_gate
+        run: |
+          QUALITY_GATE_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }} \
+            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=my-project" \
+            | jq -r '.projectStatus.status')
+          
+          if [ "$QUALITY_GATE_STATUS" != "OK" ]; then
+            echo "SonarQube Quality Gate failed"
+            exit 1
+          fi
