@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18 # Specify the Node.js version you want to use
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+  pre_build:
+    commands:
+      - echo Running tests...
+      - npm test -- --watchAll=false # Adjust if you want to run tests
+  build:
+    commands:
+      - echo Building the React app...
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Copying build artifacts...
+      - mkdir -p output
+      - cp -r build/* output/ # Adjust if your build output path is different
+
+artifacts:
+  files:
+    - output/**/* # Adjust the path if necessary
